@@ -1,0 +1,10 @@
+[package]
+name = "perlin-noise-1d-graph"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+chrono = "0.4.19"
+nannou = "0.18.1"
