@@ -1595,6 +1595,7 @@ dependencies = [
  "names",
  "nannou",
  "perlin_noise",
+ "rand 0.8.5",
 ]
 
 [[package]]
