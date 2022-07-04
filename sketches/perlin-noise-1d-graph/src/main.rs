@@ -72,9 +72,29 @@ fn view(app: &App, model: &Model, frame: Frame) {
         .color(rgb(0.855, 0.31, 0.671));
 
     draw.ellipse()
-        .xy(*model.points.iter().last().unwrap())
+        .x(0.)
+        .y(model.points.iter().last().unwrap().y)
         .w_h(50.0, 50.0)
         .color(rgb(0.855, 0.31, 0.671));
+
+    draw.text(&format!(
+        "x: {}\ny: {}",
+        app.time,
+        model.points.iter().last().unwrap().y
+    ))
+    .font_size(24)
+    .wh(win_rect.wh())
+    .left_justify()
+    .align_text_bottom()
+    .color(rgb(0.855, 0.31, 0.671));
+
+    draw.text(&format!("FPS: {}", app.fps().floor(),))
+        .font_size(48)
+        .wh(win_rect.wh())
+        .right_justify()
+        .align_text_bottom()
+        .color(rgb(0.855, 0.31, 0.671));
+
     draw.to_frame(app, &frame).unwrap();
 }
 
