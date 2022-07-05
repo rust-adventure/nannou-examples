@@ -7,7 +7,6 @@ use nannou::{
 
 // interesting variables
 const NOISE_STEP: f32 = 500.;
-const NOISE_SCALE: f32 = 1.;
 
 fn main() {
     nannou::app(model).update(update).run();
@@ -22,7 +21,7 @@ struct Model {
 fn model(app: &App) -> Model {
     let _window = app
         .new_window()
-        .size(1200, 600)
+        .size(1200, 630)
         .view(view)
         .key_pressed(key_pressed)
         .mouse_pressed(mouse_pressed)
@@ -43,9 +42,7 @@ fn update(app: &App, model: &mut Model, _update: Update) {
     let current_step = (app.elapsed_frames()
         - model.frame_start) as f32
         / NOISE_STEP;
-    let y = model
-        .noise
-        .get([(current_step * NOISE_SCALE).into(), 0.]);
+    let y = model.noise.get([current_step.into(), 0.]);
     let mapped_y = map_range(
         y,
         -1.0,
