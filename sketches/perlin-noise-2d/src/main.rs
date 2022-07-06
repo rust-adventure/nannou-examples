@@ -20,6 +20,9 @@ fn main() {
 struct Settings {
     lightness: f64,
     chroma: f64,
+    grayscale: bool,
+    hue_center: f64,
+    hue_range: f64,
 }
 struct Model {
     settings: Settings,
@@ -44,6 +47,9 @@ impl Model {
             settings: Settings {
                 lightness: 50.,
                 chroma: 80.,
+                grayscale: false,
+                hue_center: 0.0,
+                hue_range: 180.0,
             },
             egui,
             should_redraw: false,
@@ -73,45 +79,64 @@ impl Model {
                 0..self.size.y.floor() as u32,
             )
         {
-            // 0-100, 0-128,181, -180-180
-            // Lch::new(75.abs(), chroma, hue)
             let value = self.noise.get([
                 x as f64 / NOISE_STEP,
                 y as f64 / NOISE_STEP,
             ]);
-            // let mapped_value =
-            //     map_range(value, -1.0, 1.0, 0., 255.);
-            let mapped_hue: f64 =
-                map_range(value, -1.0, 1.0, -180., 180.);
-            let color = Lch::new(
-                self.settings.lightness,
-                self.settings.chroma,
-                mapped_hue,
-            );
-            let rgb_color: Rgb<f64> =
-                nannou::color::rgb::Rgb::from(color);
-            let (r, g, b) = rgb_color.into_components();
-            let mapped_r =
-                map_range(r, -1.0, 1.0, 0., 255.);
-            let mapped_g =
-                map_range(g, -1.0, 1.0, 0., 255.);
-            let mapped_b =
-                map_range(b, -1.0, 1.0, 0., 255.);
-            if let Some(buffer) = self.image.as_mut_rgb8() {
-                buffer.put_pixel(
-                    x,
-                    y,
-                    // nannou::image::Rgb::from([
-                    //     mapped_value as u8,
-                    //     mapped_value as u8,
-                    //     mapped_value as u8,
-                    // ]),
-                    nannou::image::Rgb::from([
-                        mapped_r as u8,
-                        mapped_g as u8,
-                        mapped_b as u8,
-                    ]),
+            if self.settings.grayscale {
+                let mapped_value =
+                    map_range(value, -1.0, 1.0, 0., 255.);
+                if let Some(buffer) =
+                    self.image.as_mut_rgb8()
+                {
+                    buffer.put_pixel(
+                        x,
+                        y,
+                        nannou::image::Rgb::from([
+                            mapped_value as u8,
+                            mapped_value as u8,
+                            mapped_value as u8,
+                        ]),
+                    );
+                }
+            } else {
+                let mapped_hue: f64 = map_range(
+                    value,
+                    -1.0,
+                    1.0,
+                    self.settings.hue_center
+                        - self.settings.hue_range,
+                    self.settings.hue_center
+                        + self.settings.hue_range,
                 );
+                // 0-100, 0-128,181, -180-180
+                let color = Lch::new(
+                    self.settings.lightness,
+                    self.settings.chroma,
+                    mapped_hue,
+                );
+                let rgb_color: Rgb<f64> =
+                    nannou::color::rgb::Rgb::from(color);
+                let (r, g, b) = rgb_color.into_components();
+                let mapped_r =
+                    map_range(r, -1.0, 1.0, 0., 255.);
+                let mapped_g =
+                    map_range(g, -1.0, 1.0, 0., 255.);
+                let mapped_b =
+                    map_range(b, -1.0, 1.0, 0., 255.);
+                if let Some(buffer) =
+                    self.image.as_mut_rgb8()
+                {
+                    buffer.put_pixel(
+                        x,
+                        y,
+                        nannou::image::Rgb::from([
+                            mapped_r as u8,
+                            mapped_g as u8,
+                            mapped_b as u8,
+                        ]),
+                    );
+                }
             }
         }
     }
@@ -182,6 +207,29 @@ fn update(app: &App, model: &mut Model, update: Update) {
             ))
             .changed();
 
+        // Chroma slider
+        ui.label("Hue Center:");
+        changed |= ui
+            .add(egui::Slider::new(
+                &mut settings.hue_center,
+                -180.0..=180.0,
+            ))
+            .changed();
+
+        ui.label("Hue range:");
+        changed |= ui
+            .add(egui::Slider::new(
+                &mut settings.hue_range,
+                0.0..=180.0,
+            ))
+            .changed();
+
+        changed |= ui
+            .add(egui::Checkbox::new(
+                &mut settings.grayscale,
+                "Grayscale",
+            ))
+            .changed();
         // Random color button
         let clicked = ui.button("update").clicked();
 
