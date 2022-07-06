@@ -1697,6 +1697,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "perlin-noise-3d"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "itertools",
+ "names",
+ "nannou",
+ "nannou_egui",
+ "rand 0.8.5",
+ "rayon",
+]
+
+[[package]]
 name = "pin-project-lite"
 version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
