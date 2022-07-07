@@ -5,6 +5,9 @@ use itertools::Itertools;
 use nannou::noise::BasicMulti;
 use nannou::noise::NoiseFn;
 use nannou::{image::DynamicImage, math::map_range};
+use rayon::iter::{
+    IntoParallelRefIterator, ParallelIterator,
+};
 
 fn get_noise(
     noise: &BasicMulti,
@@ -13,11 +16,17 @@ fn get_noise(
 ) -> DynamicImage {
     let mut image: DynamicImage =
         DynamicImage::new_rgb8(size.0, size.1);
-    for (x, y) in points {
-        let value =
-            noise.get([*x as f64 / 500., *y as f64 / 500.]);
-        let mapped_value =
-            map_range(value, -1.0, 1.0, 0., 255.) as u8;
+    for (x, y, mapped_value) in points
+        .par_iter()
+        .map(|(x, y)| {
+            let value = noise
+                .get([*x as f64 / 500., *y as f64 / 500.]);
+            let mapped_value =
+                map_range(value, -1.0, 1.0, 0., 255.) as u8;
+            (x, y, mapped_value)
+        })
+        .collect::<Vec<_>>()
+    {
         if let Some(buffer) = image.as_mut_rgb8() {
             buffer.put_pixel(
                 *x,

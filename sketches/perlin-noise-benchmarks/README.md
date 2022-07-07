@@ -1,20 +1,18 @@
-# 2 dimension Perlin noise
+# Perlin Noise Benchmarks
 
-Perlin noise visualized with the inputs being a grid location and the output being a color value.
-
-For colorful variants, the color used is LCH with the noise being responsible for the hue and the lightness/chroma being controlled by a user.
-
-![perlin noise](./perlin-noise-2d.png)
+Benchmarking generating perlin noise into a nannou DynamicImage for 1080p and 4k resolutions
 
 ```
-noise 1920x1080         time:   [207.00 ms 207.32 ms 207.68 ms]
-Found 16 outliers among 100 measurements (16.00%)
-  9 (9.00%) high mild
-  7 (7.00%) high severe
-
-
-noise 3840x2160         time:   [841.83 ms 853.65 ms 874.37 ms]
-Found 6 outliers among 100 measurements (6.00%)
+noise 1920x1080         time:   [33.369 ms 33.850 ms 34.366 ms]
+                        change: [-83.876% -83.673% -83.443%] (p = 0.00 < 0.05)
+                        Performance has improved.
+Found 2 outliers among 100 measurements (2.00%)
   2 (2.00%) high mild
-  4 (4.00%) high severe
+
+noise 3840x2160         time:   [132.11 ms 133.60 ms 135.35 ms]
+                        change: [-84.762% -84.349% -84.005%] (p = 0.00 < 0.05)
+                        Performance has improved.
+Found 9 outliers among 100 measurements (9.00%)
+  3 (3.00%) high mild
+  6 (6.00%) high severe
 ```
